@@ -1,12 +1,20 @@
 {
-  "product_change_rate": 0.9866666666666667,
-  "avg_price_diff": 1.8004888888888892,
+  "product_change_rate": 0.9867,
+  "avg_price_diff": 1.8003,
   "price_bias_by_change_type": {
-    "age_change": 1.6666666666666667,
-    "budget_change": 4.833333333333334,
-    "concern_change": 3.0178333333333334,
-    "ingredient_avoid_change": -2.8333333333333335,
-    "ingredient_pref_change": 7.3808333333333325,
-    "skin_type_change": -0.21177777777777773
+    "age_change": 1.6663,
+    "budget_change": 4.835,
+    "concern_change": 3.017,
+    "ingredient_avoid_change": -2.835,
+    "ingredient_pref_change": 7.3825,
+    "skin_type_change": -0.2113
+  },
+  "tone_consistency_by_change_type": {
+    "age_change": 1.0,
+    "budget_change": 1.0,
+    "concern_change": 1.0,
+    "ingredient_avoid_change": 0.75,
+    "ingredient_pref_change": 1.0,
+    "skin_type_change": 1.0
   }
 }

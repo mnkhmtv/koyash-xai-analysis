@@ -1,48 +1,47 @@
 import pandas as pd
-import ast
 import json
+import ast
+import os
 
+df = pd.read_csv("data/processed/analysis_dataset.csv")
 
-INPUT_PATH = "data/processed/analysis_dataset.csv"
-OUTPUT_PATH = "data/results/triggers.json"
+triggers = []
 
+for _, row in df.iterrows():
+    try:
+        original_products = set(ast.literal_eval(row["original_products"]))
+        modified_products = set(ast.literal_eval(row["modified_products"]))
+    except:
+        continue
 
-def detect_triggers():
-    df = pd.read_csv(INPUT_PATH)
+    product_changed = original_products != modified_products
 
-    results = []
-
-    for _, row in df.iterrows():
-        pair_id = row["pair_id"]
-        change_type = row["change_type"]
-
-        orig_products = ast.literal_eval(row["original_products"])
-        mod_products = ast.literal_eval(row["modified_products"])
-
+    try:
         orig_prices = ast.literal_eval(row["original_prices"])
         mod_prices = ast.literal_eval(row["modified_prices"])
+        orig_prices = [float(p) for p in orig_prices if p]
+        mod_prices = [float(p) for p in mod_prices if p]
+        avg_orig = sum(orig_prices) / len(orig_prices) if orig_prices else 0
+        avg_mod = sum(mod_prices) / len(mod_prices) if mod_prices else 0
+        price_diff = round(avg_mod - avg_orig, 2)
+    except:
+        price_diff = None
 
-        product_changed = orig_products != mod_products
+    triggers.append({
+        "pair_id": int(row["pair_id"]),
+        "change_type": row["change_type"],
+        "product_changed": product_changed,
+        "products_removed": list(original_products - modified_products),
+        "products_added": list(modified_products - original_products),
+        "price_diff": price_diff
+    })
 
-        if orig_prices and mod_prices:
-            avg_orig = sum(orig_prices) / len(orig_prices)
-            avg_mod = sum(mod_prices) / len(mod_prices)
-            price_diff = avg_mod - avg_orig
-        else:
-            price_diff = None
+os.makedirs("data/processed", exist_ok=True)
+with open("data/processed/triggers.json", "w", encoding="utf-8") as f:
+    json.dump(triggers, f, indent=2, ensure_ascii=False)
 
-        results.append({
-            "pair_id": int(pair_id),
-            "change_type": change_type,
-            "product_changed": product_changed,
-            "price_diff": price_diff,
-        })
-
-    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        json.dump(results, f, indent=2)
-
-    print(f"Saved triggers to {OUTPUT_PATH}")
-
-
-if __name__ == "__main__":
-    detect_triggers()
+total = len(triggers)
+changed = sum(1 for t in triggers if t["product_changed"])
+print(f"✅ Processed {total} pairs")
+print(f"📦 Product changed: {changed}/{total} ({round(changed/total*100)}%)")
+print(f"💾 Saved to data/processed/triggers.json")  
