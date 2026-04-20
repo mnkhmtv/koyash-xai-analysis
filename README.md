@@ -2,7 +2,7 @@
 
 **Team:** Diana Minnakhmetova · Janna Ivanova · Kseniia Korchagina — Innopolis University, 2026
 
-## 📖 Overview
+## 📖 Overview 
 
 This project implements **Contrastive Explanations** (inspired by the Polyjuice framework) to explain and audit predictions of an LLM-based skincare recommendation system.
 
